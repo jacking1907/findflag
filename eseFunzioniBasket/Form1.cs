@@ -20,37 +20,40 @@ namespace eseFunzioniBasket
 
         public int Score { get; internal set; }
 
-        public bool Bogus()
+ private bool Bogus()
+{
+    var faker = new Faker();
+
+    // Generate a random country name
+    var randomCountryNames = GenerateRandomCountryNames(faker, 1);
+
+    // Print the country name
+    foreach (var countryName in randomCountryNames)
+    {
+
+        if (countryName == "Russian Federation")
         {
-            var faker = new Faker();
-
-            // Generate a random country name
-            var randomCountryNames = GenerateRandomCountryNames(faker, 1);
-
-            // Print the country name
-            foreach (var countryName in randomCountryNames)
-            {
-
-
-                if (countryName.Length == 6)
-
-                {
-                    Nations = countryName;
-                    return true;
-                }
-
-
-                if (countryName == "Russian federation")
-                {
-                    Nations = "Russia";
-                    return true;
-                }
-
-
-
-            }
-            return false;
+            Nations = "Russia";
+            return true;
         }
+
+        if (countryName == "United Arab Emirates")
+        {
+            Nations = "Arabia";
+            return true;
+        }
+
+        if (countryName.Length == 6)
+        {
+            Nations = countryName;
+            //MessageBox.Show(Nations);
+            return true;
+        }
+    }
+
+    return false;
+
+}
 
         public static List<string> GenerateRandomCountryNames(Faker faker, int count)
         {
@@ -72,116 +75,107 @@ namespace eseFunzioniBasket
         }
 
         public void textBoxLxCy_KeyDown(object sender, KeyEventArgs e)
+{
+    if (e.KeyData == Keys.Back)
+    {
+        //var k = "mammababbo";
+        //var z = k.IndexOf("babbo");
+        //var m = k[z + 1];
+        var mioNome = (sender as System.Windows.Forms.TextBox).Name;
+
+        var riga = mioNome.IndexOf("L");
+        var colonna = mioNome.IndexOf("C");
+        var r = int.Parse(mioNome[riga + 1].ToString());
+        var c = int.Parse(mioNome[colonna + 1].ToString());
+
+        //var a = r;
+        //var b = c;
+
+        var a1 = r;
+        var b1 = c - 1;
+
+        var nomeDaCercare = $"textBoxL{a1}C{b1}";
+        var prevTB = default(System.Windows.Forms.Control);
+
+        try
         {
-            if (e.KeyData == Keys.Back)
-            {
-                //var k = "mammababbo";
-                //var z = k.IndexOf("babbo");
-                //var m = k[z + 1];
-
-                var mioNome = (sender as System.Windows.Forms.TextBox).Name;
-
-                var riga = mioNome.IndexOf("L");
-                var colonna = mioNome.IndexOf("C");
-                var r = int.Parse(mioNome[riga + 1].ToString());
-                var c = int.Parse(mioNome[colonna + 1].ToString());
-
-                //var a = r;
-                //var b = c;
-
-                var a1 = r;
-                var b1 = c - 1;
-
-                var nomeDaCercare = $"textBoxL{a1}C{b1}";
-                var prevTB = default(System.Windows.Forms.Control);
-
-                try
-                {
-                    prevTB = this.Controls.Find(nomeDaCercare, true)[0];
-                }
-                catch
-                {
-                    return;
-                }
-
-                (prevTB as System.Windows.Forms.TextBox).Text = "";
-                (prevTB as System.Windows.Forms.TextBox).Focus();
-            }
+            prevTB = this.Controls.Find(nomeDaCercare, true)[0];
         }
+        catch
+        {
+            (sender as System.Windows.Forms.TextBox).TextChanged -= textBoxLxCy_TextChanged;
+            return;
+        }
+
+        (sender as System.Windows.Forms.TextBox).Text ="";
+        (prevTB as System.Windows.Forms.TextBox).Focus();
+        (sender as System.Windows.Forms.TextBox).TextChanged += textBoxLxCy_TextChanged;
+    }
+}
 
         public GameForm(string nickname)
         {
             InitializeComponent();
 
-
-
-
-
-
-
-
-
-            foreach (var item in this.Controls)
+                foreach (var item in this.Controls)
+    {
+        if (item is System.Windows.Forms.TextBox)
+        {
+            var actTextBox = item as System.Windows.Forms.TextBox;
+            if (actTextBox.Name.StartsWith("textBoxL"))
             {
-                if (item is System.Windows.Forms.TextBox)
-                {
-                    var actTextBox = item as System.Windows.Forms.TextBox;
-                    if (actTextBox.Name.StartsWith("textBoxL"))
-                    {
-                        actTextBox.KeyDown += textBoxLxCy_KeyDown;
-                    }
-                }
+                actTextBox.KeyDown += textBoxLxCy_KeyDown;
             }
+        }
+    }
+    
+    foreach (var item in this.Controls)
+    {
+        if (item is System.Windows.Forms.TextBox)
+        {
+            var Enter = item as System.Windows.Forms.TextBox;
+            Enter.KeyDown += new KeyEventHandler(Send_KeyDown);
+        }
+    }
 
-            foreach (var item in this.Controls)
+    foreach (var item in this.Controls)
+    {
+        if (item is System.Windows.Forms.TextBox)
+        {
+            var Forward = item as System.Windows.Forms.TextBox;
+            if (Forward.Name.StartsWith("textBoxL"))
+            { 
+                Forward.TextChanged += textBoxLxCy_TextChanged;
+                Forward.KeyPress += new KeyPressEventHandler(KeyPress_Char);
+            }
+        }
+    }
+
+    foreach (var item in this.Controls)
+    {
+        if (item is System.Windows.Forms.TextBox)
+        {
+            var Forward = item as System.Windows.Forms.TextBox;
+
+            if (Forward.Name.StartsWith("textBoxL"))
             {
-                if (item is System.Windows.Forms.TextBox)
-                {
-                    var Enter = item as System.Windows.Forms.TextBox;
-                    Enter.KeyDown += new KeyEventHandler(Send_KeyDown);
-                }
+                Forward.KeyDown += new KeyEventHandler(RightArrowMovement);
             }
+        }
+    }
 
-            foreach (var item in this.Controls)
+    foreach (var item in this.Controls)
+    {
+        if (item is System.Windows.Forms.TextBox)
+        {
+            var Backwards = item as System.Windows.Forms.TextBox;
+
+            if (Backwards.Name.StartsWith("textBoxL"))
             {
-                if (item is System.Windows.Forms.TextBox)
-                {
-                    var Forward = item as System.Windows.Forms.TextBox;
-                    if (Forward.Name.StartsWith("textBoxL"))
-                    {
-                        Forward.TextChanged += textBoxLxCy_TextChanged;
-                        Forward.KeyPress += new KeyPressEventHandler(KeyPress_Char);
-                    }
-                }
+                Backwards.KeyDown += new KeyEventHandler(LeftArrowMovement);
             }
-
-            foreach (var item in this.Controls)
-            {
-                if (item is System.Windows.Forms.TextBox)
-                {
-                    var Forward = item as System.Windows.Forms.TextBox;
-
-                    if (Forward.Name.StartsWith("textBoxL"))
-                    {
-                        Forward.KeyDown += new KeyEventHandler(RightArrowMovement);
-                    }
-                }
-            }
-
-            foreach (var item in this.Controls)
-            {
-                if (item is System.Windows.Forms.TextBox)
-                {
-                    var Backwards = item as System.Windows.Forms.TextBox;
-
-                    if (Backwards.Name.StartsWith("textBoxL"))
-                    {
-                        Backwards.KeyDown += new KeyEventHandler(LeftArrowMovement);
-                    }
-                }
-            }
-
-
+        }
+    }
         }
 
         public GameForm()
@@ -224,46 +218,44 @@ namespace eseFunzioniBasket
 
             if (e.KeyData == Keys.Enter)
             {
-                //l += r;
+            services.NotEnabled(this, l);
+bool textbox = services.GetIfTextBoxIsEmpty(this, l);
+if (textbox)
+{
+                    try
+    {
+        string letterainserita = WORD.Substring(i - 1, 1);
+        string letterascelta = Nation.Substring(i - 1, 1);
 
-                ////if (WORD == Nation)
-                //{
-                //    for (int i = 1; i <= 6; i++)
-                //    {
-                //        Controls[$"textBoxL{l}C{i}"].BackColor = Color.Green;
-                //    }
-
-                //    textBoxL2C1.Focus();
-                //}
-                //MessageBox.Show(WORD);
-
-                for (int i = 1; i <= 6; i++)
-                {
-                    string letterainserita = WORD.Substring(i - 1, 1);
-                    string letterascelta = Nation.Substring(i - 1, 1);
-                    if (letterainserita.Equals(letterascelta))
-                    {
-                        Controls[$"textBoxL{l}C{i}"].BackColor = Color.Green;
+        if (letterainserita.Equals(letterascelta))
+        {
+            Controls[$"textBoxL{l}C{i}"].BackColor = Color.Green;
 
 
+            punteggio = punteggio + 3;
 
+        }
+        else if (Nation.Contains(letterainserita))
 
-                    }
-                    else if (Nation.Contains(letterainserita))
+        {
+            Controls[$"textBoxL{l}C{i}"].BackColor = Color.Yellow;
+            punteggio = punteggio + 1;
 
-                    {
-                        Controls[$"textBoxL{l}C{i}"].BackColor = Color.Yellow;
-
-
-                    }
-                    else
-                    {
-                        Controls[$"textBoxL{l}C{i}"].BackColor = Color.Red;
-
-                    }
+        }
+        else
+        {
+            Controls[$"textBoxL{l}C{i}"].BackColor = Color.Red;
+            punteggio = punteggio + 0;
+        }
+    }
+    catch
+    {
+        return;
+    }
+}
                 }
-
-                l = l + 1;
+}
+if (textbox){l = l + 1;}
 
                 if (WORD == Nation && l == 2)
                 {
@@ -358,7 +350,51 @@ namespace eseFunzioniBasket
 
         }
 
-        private void textBoxLxCy_TextChanged(object sender, EventArgs e)
+            private void textBoxLxCy_TextChanged(object sender, EventArgs e)
+    {
+        var mioNome = (sender as System.Windows.Forms.TextBox).Name;
+
+        var riga = mioNome.IndexOf("L");
+        var colonna = mioNome.IndexOf("C");
+        var r = int.Parse(mioNome[riga + 1].ToString());
+        var c = int.Parse(mioNome[colonna + 1].ToString());
+
+        var a1 = r;
+        var b1 = c + 1;
+
+        var nomeDaCercare = $"textBoxL{a1}C{b1}";
+        var forwardTB = default(System.Windows.Forms.Control);
+        try
+        {
+            forwardTB = this.Controls.Find(nomeDaCercare, true)[0];
+        }
+        catch
+        {
+            return;
+        }
+        finally 
+        {
+            foreach (var item in this.Controls)
+            {
+                if (item is System.Windows.Forms.TextBox)
+                {
+                    var Line = item as System.Windows.Forms.TextBox;
+
+                    if (Line.Name.StartsWith("textBoxL") && Line.Text != "")
+                    {
+                        Line.KeyDown += new KeyEventHandler(textBoxLine_TextChanged);
+                    }
+                }
+            }
+        }
+
+        (forwardTB as System.Windows.Forms.TextBox).Focus();
+    }
+
+    private void KeyPress_Char(object sender, KeyPressEventArgs e)
+    {
+        // Check if the pressed key is a valid character (e.g., alphanumeric)
+        if (char.IsLetter(e.KeyChar)) 
         {
             var mioNome = (sender as System.Windows.Forms.TextBox).Name;
 
@@ -366,9 +402,6 @@ namespace eseFunzioniBasket
             var colonna = mioNome.IndexOf("C");
             var r = int.Parse(mioNome[riga + 1].ToString());
             var c = int.Parse(mioNome[colonna + 1].ToString());
-
-            //var a = r;
-            //var b = c;
 
             var a1 = r;
             var b1 = c + 1;
@@ -380,112 +413,96 @@ namespace eseFunzioniBasket
             {
                 forwardTB = this.Controls.Find(nomeDaCercare, true)[0];
             }
-            catch (Exception ex)
+            catch
+            {
+                return;
+             }
+
+            if ((sender as System.Windows.Forms.TextBox).Text != "")
+            {
+                (forwardTB as System.Windows.Forms.TextBox).Focus();
+                if((forwardTB as System.Windows.Forms.TextBox).Text == "")
+                {
+                    (forwardTB as System.Windows.Forms.TextBox).Text += e.KeyChar.ToString();
+                }
+            }
+        }
+    }
+
+    private void RightArrowMovement(object sender, KeyEventArgs e)
+    {
+        if (e.KeyData == Keys.Right)
+        {
+            textBoxLxCy_TextChanged(sender,e);
+        }
+    }
+
+    private void LeftArrowMovement(object sender, KeyEventArgs e)
+    {
+        if (e.KeyData == Keys.Left)
+        {
+            var mioNome = (sender as System.Windows.Forms.TextBox).Name;
+
+            var riga = mioNome.IndexOf("L");
+            var colonna = mioNome.IndexOf("C");
+            var r = int.Parse(mioNome[riga + 1].ToString());
+            var c = int.Parse(mioNome[colonna + 1].ToString());
+
+            var a1 = r;
+            var b1 = c - 1;
+
+            var nomeDaCercare = $"textBoxL{a1}C{b1}";
+            var forwardTB = default(System.Windows.Forms.Control);
+            try
+            {
+                forwardTB = this.Controls.Find(nomeDaCercare, true)[0];
+            }
+            catch
             {
                 return;
             }
 
             (forwardTB as System.Windows.Forms.TextBox).Focus();
         }
+    }
 
-        private void KeyPress_Char(object sender, KeyPressEventArgs e)
+    private void textBoxLine_TextChanged(object sender, KeyEventArgs e)
+    {
+        if (e.KeyData == Keys.Enter)
         {
-            // Check if the pressed key is a valid character (e.g., alphanumeric)
-            if (char.IsLetter(e.KeyChar))
+            bool textbox = services.GetIfTextBoxIsEmpty(this, l);
+
+            var mioNome = (sender as System.Windows.Forms.TextBox).Name;
+
+            var riga = mioNome.IndexOf("L");
+            var colonna = mioNome.IndexOf("C");
+            var r = int.Parse(mioNome[riga + 1].ToString());
+            var c = int.Parse(mioNome[colonna + 1].ToString());
+
+            var a1 = r + 1;
+            var b1 = c;
+
+            if (textbox == false)
             {
-                var mioNome = (sender as System.Windows.Forms.TextBox).Name;
-
-                var riga = mioNome.IndexOf("L");
-                var colonna = mioNome.IndexOf("C");
-                var r = int.Parse(mioNome[riga + 1].ToString());
-                var c = int.Parse(mioNome[colonna + 1].ToString());
-
-                var a1 = r;
-                var b1 = c + 1;
-
-                var nomeDaCercare = $"textBoxL{a1}C{b1}";
-                var forwardTB = default(System.Windows.Forms.Control);
-
-                try
-                {
-                    forwardTB = this.Controls.Find(nomeDaCercare, true)[0];
-                }
-                catch
-                {
-                    return;
-                }
-
-                if ((sender as System.Windows.Forms.TextBox).Text != "")
-                {
-                    (forwardTB as System.Windows.Forms.TextBox).Focus();
-                    if ((forwardTB as System.Windows.Forms.TextBox).Text == "")
-                    {
-                        (forwardTB as System.Windows.Forms.TextBox).Text += e.KeyChar.ToString();
-                    }
-                }
-
+                return;
             }
-        }
 
+                b1 = (c+1) - c;
 
+            var nomeDaCercare = $"textBoxL{a1}C{b1}";
+            var forwardLine = default(System.Windows.Forms.Control);
 
-
-
-        private void RightArrowMovement(object sender, KeyEventArgs e)
-        {
+            try
             {
-                var mioNome = (sender as System.Windows.Forms.TextBox).Name;
-
-                var riga = mioNome.IndexOf("L");
-                var colonna = mioNome.IndexOf("C");
-                var r = int.Parse(mioNome[riga + 1].ToString());
-                var c = int.Parse(mioNome[colonna + 1].ToString());
-
-                var a1 = r;
-                var b1 = c + 1;
-
-                var nomeDaCercare = $"textBoxL{a1}C{b1}";
-                var forwardTB = default(System.Windows.Forms.Control);
-                try
-                {
-                    forwardTB = this.Controls.Find(nomeDaCercare, true)[0];
-                }
-                catch
-                {
-                    return;
-                }
-
-                (forwardTB as System.Windows.Forms.TextBox).Focus();
+                forwardLine = this.Controls.Find(nomeDaCercare, true)[0];
             }
-        }
-
-        private void LeftArrowMovement(object sender, KeyEventArgs e)
-        {
-            if (e.KeyData == Keys.Left)
+            catch
             {
-                var mioNome = (sender as System.Windows.Forms.TextBox).Name;
-
-                var riga = mioNome.IndexOf("L");
-                var colonna = mioNome.IndexOf("C");
-                var r = int.Parse(mioNome[riga + 1].ToString());
-                var c = int.Parse(mioNome[colonna + 1].ToString());
-
-                var a1 = r;
-                var b1 = c - 1;
-
-                var nomeDaCercare = $"textBoxL{a1}C{b1}";
-                var forwardTB = default(System.Windows.Forms.Control);
-                try
-                {
-                    forwardTB = this.Controls.Find(nomeDaCercare, true)[0];
-                }
-                catch
-                {
-                    return;
-                }
-
-                (forwardTB as System.Windows.Forms.TextBox).Focus();
+                return;
             }
+
+        (forwardLine as System.Windows.Forms.TextBox).Focus();
         }
     }
+  }
 }
